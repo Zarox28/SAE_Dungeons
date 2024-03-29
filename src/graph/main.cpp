@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 #include "../../include/graph/graph.h"
 
@@ -47,3 +48,26 @@ GenerateBaseGraph(unsigned width, unsigned height) noexcept(false)
   }
   return edges;
 }
+
+inline void printGraph(unsigned width, unsigned height) noexcept(true) {
+	unsigned int number_edges = CalculateNumberOfEdges(width, height);
+	std::vector<std::vector<int>> matrice(width, std::vector<int>(height));
+	for (int i = 0; i < width; i++) {
+		for (int j = 0; j < height; i++) {
+			std::cout << " - " << std::endl;
+		}
+	}
+}
+
+/*
+* --- Latest ---
+*
+* Author : Shrayzz
+* Time : 29/03/2024 13:30
+*
+* Chengelog :
+* > Added "#include <iostream> for terminal printing
+* > Doing some tests for print matrice with width and height dimensions
+* >
+* > Added : Line(s) 52 - 60
+*/
