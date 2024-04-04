@@ -1,18 +1,9 @@
+#include "src/dungeon/dungeon.cpp"
+
 #include <iostream>
-#include "include/graph/graph.h"
 
-
-int main() 
+int main()
 {
-  
+  Dungeon* test_dungeon = new Dungeon(6, 6);
+  std::cout << test_dungeon->RenderAsciiFrame();
 }
-
-/*
-* --- Latest ---
-*
-* Author : Shrayzz
-* Time : 29/03/2024 13:30
-*
-* Chengelog :
-* > Added "#include <iostream> for terminal printing
-*/
