@@ -1,6 +1,7 @@
 #pragma once
 
 #include "../../include/graph/exceptions.h"
+
 #include <vector>
 
 struct Edge
@@ -11,13 +12,28 @@ struct Edge
   int      weight_wealth = 0;
 };
 
-inline unsigned CalculateNumberOfEdges(unsigned width, unsigned height);
+class Graph
+{
+    private:
+  unsigned            w;
+  unsigned            h;
+  std::vector< Edge > data;
 
-inline bool CanCreateNodeForward(unsigned index_on_line, unsigned grid_width);
+  static inline unsigned CalculateNumberOfEdges(unsigned width, unsigned height);
+  static inline bool CanCreateNodeForward(unsigned index_on_line, unsigned grid_width);
+  static inline bool CanCreateNodeBottom(
+    unsigned line_number, unsigned element_per_line, unsigned grid_height
+  );
 
-inline bool CanCreateNodeBottom(
-  unsigned line_number, unsigned element_per_line, unsigned grid_height
-);
+    public:
+  unsigned get_witdh() noexcept;
+  unsigned get_height() noexcept;
 
-extern std::vector< Edge >
-GenerateBaseGraph(unsigned width, unsigned height) noexcept(false);
+  void set_width(unsigned width) noexcept(false);
+  void set_height(unsigned height) noexcept(false);
+
+  std::vector< Edge > get_data() noexcept(false);
+
+  void GenerateBaseGraph() noexcept(false);
+  Graph(unsigned width, unsigned height) noexcept(false);
+};
