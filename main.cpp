@@ -1,5 +1,4 @@
 #include "src/dungeon/dungeon.cpp"
-
 #include <iostream>
 
 int main()
