@@ -50,3 +50,20 @@ Graph::Graph(unsigned width, unsigned height) noexcept(false)
   w = width;
   h = height;
 }
+
+void printGraph(unsigned width, unsigned height) noexcept(true) {
+    for (unsigned i = 0; i < height; ++i) {
+        // Print horizontal edges
+        for (unsigned j = 0; j < width; ++j) {
+            std::cout << "+--";
+        }
+        std::cout << "+" << std::endl;
+
+        // Print nodes and vertical edges
+        for (unsigned j = 0; j < width; ++j) {
+            // Print node
+            std::cout << "|  ";
+        }
+        std::cout << "|" << std::endl;
+    }
+}

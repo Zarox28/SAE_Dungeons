@@ -26,3 +26,5 @@ std::string Dungeon::RenderAsciiFrame() {
 Dungeon::Dungeon(unsigned width, unsigned height) noexcept(false) : graph(width, height) {
   graph.GenerateBaseGraph();
 }
+
+
