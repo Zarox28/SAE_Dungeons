@@ -1,16 +1,18 @@
+#pragma once
+
 #include <exception>
 #include <string>
 
-static const std::string default_message
+static const std::string default_graph_message
   = "Base graph exception, something wrong happened surrounding the graph";
 
 class GraphException : public std::exception
 {
     private:
-  std::string message = default_message;
+  std::string message = default_graph_message;
 
     public:
-  GraphException(std::string detail = default_message) : message(detail) {}
+  GraphException(std::string detail = default_graph_message) : message(detail) {}
 
   std::string what() { return message; }
 };
