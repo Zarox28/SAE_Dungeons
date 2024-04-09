@@ -17,13 +17,12 @@ inline bool CanCreateNodeForward(unsigned index_on_line, unsigned grid_width)
   return index_on_line + 1 < grid_width;
 }
 
-inline bool
-CanCreateNodeBottom(unsigned line_number, unsigned element_per_line, unsigned grid_height)
+inline bool CanCreateNodeBottom(unsigned line_number, unsigned element_per_line, unsigned grid_height)
 {
   return (line_number + 1) * element_per_line < grid_height;
 }
 
-extern std::vector< Edge >
+extern std::vector<Edge>
 GenerateBaseGraph(unsigned width, unsigned height) noexcept(false)
 {
   if (width == 0 || height == 0) throw new GraphInvalidSizeException(width, height);
@@ -50,24 +49,37 @@ GenerateBaseGraph(unsigned width, unsigned height) noexcept(false)
 }
 
 inline void printGraph(unsigned width, unsigned height) noexcept(true) {
-	unsigned int number_edges = CalculateNumberOfEdges(width, height);
-	std::vector<std::vector<int>> matrice(width, std::vector<int>(height));
-	for (int i = 0; i < width; i++) {
-		for (int j = 0; j < height; i++) {
-			std::cout << " - " << std::endl;
-		}
-	}
+    unsigned int number_edges = CalculateNumberOfEdges(width, height);
+    
+    // Print top border
+    std::cout << "+";
+    for (unsigned i = 0; i < width; ++i) {
+        std::cout << "--+";
+    }
+    std::cout << std::endl;
+
+    // Print rows
+    for (unsigned i = 0; i < height; ++i) {
+        // Print nodes and vertical edges
+        for (unsigned j = 0; j < width; ++j) {
+            std::cout << "|  ";
+        }
+        std::cout << "|" << std::endl;
+
+        // Print horizontal edges
+        for (unsigned j = 0; j < width; ++j) {
+            std::cout << "+--";
+        }
+        std::cout << "+" << std::endl;
+    }
 }
 
-/*
-* --- Latest ---
-*
-* Author : Shrayzz
-* Time : 29/03/2024 13:30
-*
-* Chengelog :
-* > Added "#include <iostream> for terminal printing
-* > Doing some tests for print matrice with width and height dimensions
-* >
-* > Added : Line(s) 52 - 60
-*/
+int main() {
+    unsigned int width = 10;
+    unsigned int height = 10;
+
+    auto edges = GenerateBaseGraph(width, height);
+    printGraph(width, height);
+
+    return 0;
+}
