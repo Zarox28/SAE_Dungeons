@@ -1,5 +1,6 @@
 #pragma once
 #include "../../include/graph/graph.h"
+#include <iostream>
 
 bool Graph::CanCreateNodeForward(unsigned index_on_line, unsigned grid_width)
 {

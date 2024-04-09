@@ -1,4 +1,5 @@
 #include "src/dungeon/dungeon.cpp"
+#include "src/graph/graph.cpp"
 #include <iostream>
 
 int main() {
