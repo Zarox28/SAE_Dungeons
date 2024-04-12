@@ -1,5 +1,6 @@
 #pragma once
 #include "../../include/graph/graph.h"
+#include <iostream>
 
 #include <algorithm>
 #include <cstddef>
@@ -112,3 +113,4 @@ void Graph::DebugGraph()
   }
   printf("----DEBUG");
 }
+
