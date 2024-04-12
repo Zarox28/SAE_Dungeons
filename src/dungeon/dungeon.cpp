@@ -23,8 +23,15 @@ std::string Dungeon::RenderAsciiFrame() {
   return frame;
 }
 
-Dungeon::Dungeon(unsigned width, unsigned height) noexcept(false) : graph(width, height) {
+Dungeon::Dungeon(unsigned width, unsigned height, unsigned start_x, unsigned start_y) noexcept(false) : graph(width, height) {
+  if (start_x > width || start_y > height) throw new DungeonException("Invalid start position");
+
+  start_node = start_y * width + start_x;
+  
   graph.GenerateBaseGraph();
+  graph.scramble(start_node);
+
+  graph.DebugGraph();
 }
 
 

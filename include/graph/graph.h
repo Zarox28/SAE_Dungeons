@@ -37,6 +37,8 @@ class Graph
 
   void set_width(unsigned width) noexcept(false);
   void set_height(unsigned height) noexcept(false);
+  void scramble(unsigned start_node) noexcept;
+  void DebugGraph();
 
   std::vector< Token > get_data() noexcept(false);
 
