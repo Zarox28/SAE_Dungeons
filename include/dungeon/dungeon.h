@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../src/graph/graph.cpp"
+#include "../../include/graph/graph.h"
 #include "./exceptions.h"
 
 #include <string.h>

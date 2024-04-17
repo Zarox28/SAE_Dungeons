@@ -32,3 +32,6 @@
 *.app
 main
 core*
+zig-out
+zig-cache
+libs/
