@@ -1,23 +1,8 @@
 #pragma once
 #include "../../include/graph/graph.h"
-#include <iostream>
 
 #include <algorithm>
-#include <cstddef>
-#include <iostream>
 #include <random>
-
-bool Graph::CanCreateNodeForward(unsigned index_on_line, unsigned grid_width)
-{
-  return index_on_line + 1 < grid_width;
-}
-
-bool Graph::CanCreateNodeBottom(
-  unsigned line_number, unsigned element_per_line, unsigned grid_height
-)
-{
-  return (line_number + 1) * element_per_line < grid_height;
-}
 
 unsigned Graph::get_witdh() noexcept { return w; }
 
@@ -35,55 +20,68 @@ void Graph::set_height(unsigned height) noexcept(false)
   h = height;
 }
 
-void Graph::GenerateBaseGraph() noexcept(false)
+void Graph::GenerateBaseGraph() noexcept
 {
-  data.resize(h * w, Token { .item = DISCONNECTED, .value = 0 });
+  const unsigned number_of_nodes = (h * w);
+  data.resize(number_of_nodes * number_of_nodes, Connection { .type = UNREACHABLE, .value = 0 });
 
   for (unsigned row = 0; row < h; row++)
   {
     for (unsigned col = 0; col < w; col++)
     {
-      unsigned node_num = (row * w + col);
-
+      unsigned current_node = row * w + col;
       if (col + 1 < w)
-        data[node_num * w + (node_num + 1)] = Token { .item = NO_ITEM, .value = 0 };
-
+      {
+        // Connect to the node on the right
+        unsigned next_on_line = current_node + 1;
+        set_connection_between(current_node, next_on_line, { .type = WALLED, .value = 0 });
+        set_connection_between(next_on_line, current_node, { .type = WALLED, .value = 0 });
+      }
       if (row + 1 < h)
-        data[node_num * w + (node_num + w)] = Token { .item = NO_ITEM, .value = 0 };
+      {
+        // Connect to the node below
+        unsigned below = current_node + w;
+        set_connection_between(current_node, below, { .type = WALLED, .value = 0 });
+        set_connection_between(below, current_node, { .type = WALLED, .value = 0 });
+      }
     }
   }
 }
 
-std::vector< Token > Graph::get_data() noexcept(false) { return data; }
 
 // pretty sure this doesn't work as intended
-void Graph::scramble(unsigned start_node) noexcept
+void Graph::Scramble(unsigned start_node) noexcept
 {
-  std::vector< bool > visited(w);
+  const unsigned number_of_nodes = w * h;
+
+  std::random_device rand;
+  std::mt19937       gen(rand());
+
+  std::vector< bool >     visited(number_of_nodes);
+  std::vector< unsigned > stack;
+
   visited[start_node] = true;
 
-  std::vector< unsigned > stack;
   stack.push_back(start_node);
 
-  auto rng = std::default_random_engine {};
-  while (! stack.empty())
+  while (stack.size() > 0)
   {
-    unsigned node = stack.back();  // ref
+    unsigned cell = stack.back();
     stack.pop_back();
 
-    unsigned pos_in_matrix_data = w * node;
+    std::vector< unsigned > neighbors;
+    for (unsigned node = 0; node < number_of_nodes; node++)
+      if (get_connection_between(cell, node).type != UNREACHABLE) neighbors.push_back(node);
 
-    std::vector< int > neighbours(4);
+    std::shuffle(neighbors.begin(), neighbors.end(), gen);
 
-    for (int i = 0; i < 4; i++) neighbours.push_back(pos_in_matrix_data + i);
-
-    std::shuffle(neighbours.begin(), neighbours.end(), rng);
-    for (size_t i = 0; i < neighbours.size(); i++)
+    for (unsigned neighbor : neighbors)
     {
-      if (visited[i]) continue;
-      data[pos_in_matrix_data + i] = { .item = NO_ITEM, .value = 0 };
-      visited[i]                   = true;
-      stack.push_back(i);
+      if (visited[neighbor]) continue;
+
+      set_connection_between(cell, neighbor, { .type = NO_ITEM, .value = 0 });
+      visited[neighbor] = true;
+      stack.push_back(neighbor);
     }
   }
 }
@@ -96,21 +94,30 @@ Graph::Graph(unsigned width, unsigned height) noexcept(false)
   h = height;
 }
 
-void Graph::DebugGraph()
+void Graph::PrintAjacencyMatrix()
 {
   printf("----DEBUG\n");
-  for (unsigned i = 0; i < h; i++)
+  for (unsigned i = 0; i < h * w; i++)
   {
-    for (unsigned j = 0; j < w; j++)
+    for (unsigned j = 0; j < h * w; j++)
     {
-      Token current = data[i * w + j];
-      if (current.item != DISCONNECTED)
+      Connection current = get_connection_between(i, j);
+      if (current.type == WALLED)
         printf("1");
       else
         printf("0");
     }
     printf("\n");
   }
-  printf("----DEBUG");
+  printf("----DEBUG\n");
 }
 
+Connection Graph::get_connection_between(unsigned node_a, unsigned node_b) noexcept
+{
+  return this->data[node_a * w * h + node_b];
+}
+
+void Graph::set_connection_between(unsigned node_a, unsigned node_b, Connection connection) noexcept
+{
+  this->data[node_a * w * h + node_b] = connection;
+}

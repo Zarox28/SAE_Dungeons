@@ -35,3 +35,4 @@ core*
 zig-out
 zig-cache
 libs/
+.zed

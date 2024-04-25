@@ -2,36 +2,130 @@
 
 #include "../../include/dungeon/dungeon.h"
 
-unsigned Dungeon::get_hallway_length() noexcept { return hallway_length; }
+#include <iostream>
 
-void Dungeon::set_hallway_length(unsigned length)
+// Modified from Corentin S code
+void Dungeon::RenderAsciiFrame()
 {
-  if (length < 3) throw new DungeonInvalidHallwayLengthException(length);
-  hallway_length = length;
+  const unsigned size = this->graph.get_height();
+
+  std::vector< std::vector< char > > GrilleAffichageDonjon(size * 2 + 1, std::vector< char >(size * 2 + 1, '-'));
+
+  int x, y;
+  for (int i = 0; i < size; i++)
+  {
+    for (int j = 0; j < size; j++)
+    {
+      x                           = i * 2 + 1;
+      y                           = j * 2 + 1;
+      GrilleAffichageDonjon[x][y] = ' ';
+    }
+  }
+
+  // placement des croix dans les coins
+
+  for (int i = 0; i < size * 2 + 1; i++)
+  {
+    for (int j = 0; j < size * 2 + 1; j++)
+      if (i % 2 == 0 && j % 2 == 0) GrilleAffichageDonjon[i][j] = '+';
+  }
+
+  // placement des murs
+  for (int i = 0; i < size * 2 + 1; i++)
+  {
+    for (int j = 0; j < size * 2 + 1; j++)
+      if (i % 2 == 1 && j % 2 == 0) GrilleAffichageDonjon[i][j] = '|';
+  }
+
+  // Destruction des murs
+
+  int pointEnVerif, x1, y1, pointEnConnexion;
+
+  for (int i = 0; i < size * size; i++)
+  {
+    for (int k = 0; k < size * size; k++)
+    {
+      pointEnVerif = k;
+      for (int j = 0; j < 4; j++)
+      {
+        switch (j)
+        {
+          case (0) :
+            x                = pointEnVerif / size;
+            y                = pointEnVerif % size;
+            x1               = x - 1;
+            y1               = y;
+            pointEnConnexion = x1 * size + y1;
+            if (x - 1 >= 0)
+            {
+              if (graph.get_connection_between(x, y).type != WALLED && graph.get_connection_between(x, y).type != UNREACHABLE)
+              {
+                GrilleAffichageDonjon[x * 2][y * 2 + 1] = ' ';
+              }
+            }
+            break;
+          case (1) :
+            x                = pointEnVerif / size;
+            y                = pointEnVerif % size;
+            x1               = x;
+            y1               = y + 1;
+            pointEnConnexion = x1 * size + y1;
+            if (y + 1 < size)
+            {
+              if (graph.get_connection_between(x, y).type != WALLED && graph.get_connection_between(x, y).type != UNREACHABLE)
+              {
+                GrilleAffichageDonjon[x * 2 + 1][y * 2 + 2] = ' ';
+              }
+            }
+            break;
+          case (2) :
+            x                = pointEnVerif / size;
+            y                = pointEnVerif % size;
+            x1               = x + 1;
+            y1               = y;
+            pointEnConnexion = x1 * size + y1;
+            if (x + 1 < size)
+            {
+              if (graph.get_connection_between(x, y).type != WALLED && graph.get_connection_between(x, y).type != UNREACHABLE)
+              {
+                GrilleAffichageDonjon[x * 2 + 2][y * 2 + 1] = ' ';
+              }
+            }
+            break;
+          case (3) :
+            x                = pointEnVerif / size;
+            y                = pointEnVerif % size;
+            x1               = x;
+            y1               = y - 1;
+            pointEnConnexion = x1 * size + y1;
+            if (y - 1 >= 0)
+            {
+              if (graph.get_connection_between(x, y).type != WALLED && graph.get_connection_between(x, y).type != UNREACHABLE)
+              {
+                GrilleAffichageDonjon[x * 2 + 1][y * 2] = ' ';
+              }
+            }
+            break;
+        }
+      }
+    }
+  }
+
+  for (int i = 0; i < size * 2 + 1; i++)
+  {
+    for (int j = 0; j < size * 2 + 1; j++) std::cout << GrilleAffichageDonjon[i][j] << " ";
+    std::cout << std::endl;
+  }
 }
 
-inline unsigned Dungeon::CalculateGridSize() {
-  return hallway_length*(graph.get_height() + graph.get_witdh());
-}
+Dungeon::Dungeon(unsigned width, unsigned height, unsigned start_x, unsigned start_y) noexcept(false) :
+  graph(width, height)
+{
+  if (start_x > width - 1 || start_y > height - 1) throw new DungeonException("Invalid start position");
 
-std::string Dungeon::RenderAsciiFrame() {
-  unsigned grid_size = CalculateGridSize();
+  start_cell = start_y * width + start_x;
 
-  // empty frame
-  std::string frame (grid_size, ' ');
-
-  return frame;
-}
-
-Dungeon::Dungeon(unsigned width, unsigned height, unsigned start_x, unsigned start_y) noexcept(false) : graph(width, height) {
-  if (start_x > width || start_y > height) throw new DungeonException("Invalid start position");
-
-  start_node = start_y * width + start_x;
-  
   graph.GenerateBaseGraph();
-  graph.scramble(start_node);
-
-  graph.DebugGraph();
+  graph.Scramble(start_cell);
+  graph.PrintAjacencyMatrix();
 }
-
-

@@ -6,13 +6,19 @@ pub fn build(b: *std.Build) void {
 
     const optimize = b.standardOptimizeOption(.{});
 
+    const ressources = b.addInstallDirectory(.{
+        .source_dir = .{ .path = "res" },
+        .install_dir = .{ .prefix = {} },
+        .install_subdir = "res",
+    });
+
     const exe = b.addExecutable(.{
         .name = "dungeon",
         .target = target,
         .optimize = optimize,
     });
 
-    const lib = raylib.addRaylib(b, target, optimize, .{ .linux_display_backend = .Wayland }) catch @panic("Failed to build raylib !");
+    const lib = raylib.addRaylib(b, target, optimize, .{ .linux_display_backend = .X11, .platform_drm = false }) catch @panic("Failed to build raylib !");
 
     exe.linkLibCpp();
     exe.linkLibrary(lib);
@@ -27,6 +33,8 @@ pub fn build(b: *std.Build) void {
     });
 
     b.installArtifact(exe);
+    ressources.step.dependOn(b.getInstallStep());
+
     const run_cmd = b.addRunArtifact(exe);
 
     run_cmd.step.dependOn(b.getInstallStep());
