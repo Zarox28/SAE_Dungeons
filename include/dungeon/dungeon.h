@@ -15,6 +15,9 @@ class Dungeon
     public:
   /// The entrance to the dungeon, where the path starts
   unsigned start_cell;
+  /// The exit of the dungeon
+  unsigned exit_cell;
+
   /**
    * Creates a new dungeon
    *
@@ -29,10 +32,5 @@ class Dungeon
    */
   Dungeon(unsigned width, unsigned height, unsigned start_x, unsigned start_y) noexcept(false);
 
-  /**
-   * Renders the dungeon on the terminal
-   * This was kindly given by Corentin S and their team
-   */
-  void   RenderAsciiFrame();
   Graph* get_graph() noexcept;
 };

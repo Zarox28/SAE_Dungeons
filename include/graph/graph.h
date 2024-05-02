@@ -107,7 +107,7 @@ class Graph
    *
    * @param start_node Where to start scrambling from
    */
-  void Scramble(unsigned start_node) noexcept;
+  unsigned Scramble(unsigned start_node) noexcept;
   /**
    * Prints the adjacency matrix for the graph, where 1 represents a wall and 0
    * something else

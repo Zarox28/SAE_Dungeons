@@ -48,30 +48,31 @@ void Graph::GenerateBaseGraph() noexcept
   }
 }
 
-
-// pretty sure this doesn't work as intended
-void Graph::Scramble(unsigned start_node) noexcept
+unsigned Graph::Scramble(unsigned start_node) noexcept
 {
   const unsigned number_of_nodes = w * h;
 
   std::random_device rand;
   std::mt19937       gen(rand());
 
-  std::vector< bool >     visited(number_of_nodes);
+
+  std::vector< bool >     visited(number_of_nodes, false);
   std::vector< unsigned > stack;
 
   visited[start_node] = true;
-
   stack.push_back(start_node);
 
-  while (stack.size() > 0)
+  unsigned exit;
+  unsigned furthest = 0;
+
+  while (! stack.empty())
   {
     unsigned cell = stack.back();
     stack.pop_back();
 
     std::vector< unsigned > neighbors;
     for (unsigned node = 0; node < number_of_nodes; node++)
-      if (get_connection_between(cell, node).type != UNREACHABLE) neighbors.push_back(node);
+      if (get_connection_between(cell, node).type == WALLED) neighbors.push_back(node);
 
     std::shuffle(neighbors.begin(), neighbors.end(), gen);
 
@@ -80,10 +81,16 @@ void Graph::Scramble(unsigned start_node) noexcept
       if (visited[neighbor]) continue;
 
       set_connection_between(cell, neighbor, { .type = NO_ITEM, .value = 0 });
+      set_connection_between(neighbor, cell, { .type = NO_ITEM, .value = 0 });
+
       visited[neighbor] = true;
+      visited[cell]     = true;
       stack.push_back(neighbor);
+
+      if ((unsigned int) neighbor - start_node > furthest) exit = neighbor;
     }
   }
+  return exit;
 }
 
 Graph::Graph(unsigned width, unsigned height) noexcept(false)

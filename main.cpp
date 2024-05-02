@@ -1,6 +1,7 @@
 #include "include/graph/graph.h"
+
+#include <iostream>
 #define RAYGUI_IMPLEMENTATION
-#define DUNGEON_SIZE  40
 #define WINDOW_WIDTH  800
 #define WINDOW_HEIGHT 800
 
@@ -11,14 +12,18 @@
 
 int main()
 {
-  Dungeon* d = new Dungeon(DUNGEON_SIZE, DUNGEON_SIZE, 25, 25);
+  unsigned DUNGEON_SIZE = 70;
+  printf("Enter graph size: ");
+  std::cin >> DUNGEON_SIZE;
+
+  Dungeon* d = new Dungeon(DUNGEON_SIZE, DUNGEON_SIZE, 0, 0);
   Graph*   g = d->get_graph();
 
-  const unsigned wall_ratio = 10;
+  const unsigned wall_ratio    = 10;
   const unsigned panning_speed = 20;
-  unsigned       cell_size  = 40 / (DUNGEON_SIZE / 17);
-  int            offset_x   = 0;
-  int            offset_y   = 0;
+  unsigned       cell_size     = 40;
+  int            offset_x      = 0;
+  int            offset_y      = 0;
 
   InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "SAE Dungeons - AK | GO | AM");
   SetTargetFPS(60);
@@ -48,7 +53,7 @@ int main()
         Color cell_color = GRAY;
 
         if (cellNum == d->start_cell) cell_color = RED;
-        ;
+        if (cellNum == d->exit_cell) cell_color = GREEN;
 
         // Draw cells
         DrawRectangleV(
