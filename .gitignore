@@ -35,3 +35,5 @@ core*
 zig-out
 zig-cache
 .zed
+.vscode
+.DS_Store
