@@ -9,12 +9,12 @@
 class Dungeon
 {
     private:
-  /// The entrance to the dungeon, where the path starts
-  unsigned start_cell;
   /// Underlying storage
   Graph graph;
 
     public:
+  /// The entrance to the dungeon, where the path starts
+  unsigned start_cell;
   /**
    * Creates a new dungeon
    *
@@ -33,5 +33,6 @@ class Dungeon
    * Renders the dungeon on the terminal
    * This was kindly given by Corentin S and their team
    */
-  void RenderAsciiFrame();
+  void   RenderAsciiFrame();
+  Graph* get_graph() noexcept;
 };
