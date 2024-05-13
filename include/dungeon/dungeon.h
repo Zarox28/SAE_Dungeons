@@ -30,7 +30,7 @@ class Dungeon
    * detail
    * @throws DungeonException() if the given start position is outside of the dungeon
    */
-  Dungeon(unsigned width, unsigned height, unsigned start_x, unsigned start_y) noexcept(false);
+  Dungeon(unsigned width, unsigned height, unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) noexcept(false);
 
   Graph* get_graph() noexcept;
 };

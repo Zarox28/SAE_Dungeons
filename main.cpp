@@ -16,7 +16,7 @@ int main()
   printf("Enter graph size: ");
   std::cin >> DUNGEON_SIZE;
 
-  Dungeon* d = new Dungeon(DUNGEON_SIZE, DUNGEON_SIZE, 0, 0);
+  Dungeon* d = new Dungeon(DUNGEON_SIZE, DUNGEON_SIZE, 0, 0, DUNGEON_SIZE-1, DUNGEON_SIZE-1);
   Graph*   g = d->get_graph();
 
   const unsigned wall_ratio    = 10;
@@ -39,6 +39,11 @@ int main()
     if (IsKeyDown(KEY_RIGHT)) offset_x -= panning_speed;
     if (IsKeyDown(KEY_UP)) offset_y += panning_speed;
     if (IsKeyDown(KEY_DOWN)) offset_y -= panning_speed;
+
+    if (IsKeyPressed(KEY_SPACE)) {
+        d = new Dungeon(DUNGEON_SIZE, DUNGEON_SIZE, 0, 0, DUNGEON_SIZE-1, DUNGEON_SIZE-1);
+        g = d->get_graph();
+    }
 
     BeginDrawing();
     ClearBackground(BLACK);
