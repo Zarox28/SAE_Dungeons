@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../src/graph/graph.cpp"
+#include "../../include/graph/graph.h"
 #include "./exceptions.h"
 
 #include <string.h>
@@ -9,15 +9,28 @@
 class Dungeon
 {
     private:
-  unsigned hallway_length = 3;
-  unsigned start_node;
-  Graph    graph;
-
-  inline unsigned CalculateGridSize();
+  /// Underlying storage
+  Graph graph;
 
     public:
-  Dungeon(unsigned width, unsigned height, unsigned start_x, unsigned start_y) noexcept(false);
-  void        set_hallway_length(unsigned length) noexcept(false);
-  unsigned    get_hallway_length() noexcept;
-  std::string RenderAsciiFrame();
+  /// The entrance to the dungeon, where the path starts
+  unsigned start_cell;
+  /// The exit of the dungeon
+  unsigned exit_cell;
+
+  /**
+   * Creates a new dungeon
+   *
+   * @param width Number of cells per line the dungeons has
+   * @param height Number of line the dungeons has
+   * @param start_x X coordinate of the entrance door to the dungeon
+   * @param start_y Y coordinate of the entrance door to the dungeon
+   *
+   * @throws GraphInvalidSizeException() if the given size of the dungeon is invalid, see Graph constructor for further
+   * detail
+   * @throws DungeonException() if the given start position is outside of the dungeon
+   */
+  Dungeon(unsigned width, unsigned height, unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) noexcept(false);
+
+  Graph* get_graph() noexcept;
 };

@@ -1,37 +1,23 @@
 #pragma once
 
 #include "../../include/dungeon/dungeon.h"
+#include <iostream>
 
-unsigned Dungeon::get_hallway_length() noexcept { return hallway_length; }
+Graph* Dungeon::get_graph() noexcept {
+    return &graph;
+}
 
-void Dungeon::set_hallway_length(unsigned length)
+Dungeon::Dungeon(unsigned width, unsigned height, unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y) noexcept(false) :
+  graph(width, height)
 {
-  if (length < 3) throw new DungeonInvalidHallwayLengthException(length);
-  hallway_length = length;
-}
+  if (start_x > width - 1 || start_y > height - 1) throw new DungeonException("Invalid start position");
+  if (end_x > width - 1 || end_y > height - 1) throw new DungeonException("Invalid end position");
 
-inline unsigned Dungeon::CalculateGridSize() {
-  return hallway_length*(graph.get_height() + graph.get_witdh());
-}
 
-std::string Dungeon::RenderAsciiFrame() {
-  unsigned grid_size = CalculateGridSize();
+  start_cell = start_y * width + start_x;
+  exit_cell = end_y * width + end_x;
 
-  // empty frame
-  std::string frame (grid_size, ' ');
-
-  return frame;
-}
-
-Dungeon::Dungeon(unsigned width, unsigned height, unsigned start_x, unsigned start_y) noexcept(false) : graph(width, height) {
-  if (start_x > width || start_y > height) throw new DungeonException("Invalid start position");
-
-  start_node = start_y * width + start_x;
-  
   graph.GenerateBaseGraph();
-  graph.scramble(start_node);
-
-  graph.DebugGraph();
+  graph.Scramble(start_cell, exit_cell);
+  // graph.PrintAjacencyMatrix();
 }
-
-
