@@ -55,8 +55,8 @@ class Graph
   /**
    * Internal storage of the graph
    *
-   * NOTE: This shouldn't be use directly unless strictly necessary instead use the conveniance accessors
-   * `Graph::set/get_connection_between()`
+   * NOTE: This shouldn't be use directly unless strictly necessary instead use the
+   * conveniance accessors `Graph::set/get_connection_between()`
    */
   std::vector< Connection > data;
 
@@ -100,7 +100,9 @@ class Graph
    * @param node_a The cell to set the connection from
    * @param node_b The cell to set the connection to
    */
-  void set_connection_between(unsigned node_a, unsigned node_b, Connection connection) noexcept;
+  void set_connection_between(
+    unsigned node_a, unsigned node_b, Connection connection
+  ) noexcept;
 
   /**
    * Scrambles the graph using a random DFS algorithm
@@ -117,6 +119,11 @@ class Graph
   void RemoveRandomWalls(uint percentage) noexcept;
 
   /**
+   * Places items on the graph
+   */
+  void PlaceItems() noexcept;
+
+  /**
    * Prints the adjacency matrix for the graph, where 1 represents a wall and 0
    * something else
    */
@@ -127,7 +134,8 @@ class Graph
 
   /**
    * Initializes a graph with provided width and height
-   * This does not create a usable graph, use this in combination with `Scramble()` to get a working graphh
+   * This does not create a usable graph, use this in combination with `Scramble()` to get
+   * a working graphh
    *
    * @param width How many nodes per line to initialize the graph with
    * @param height How many lines to initialize the graph with
