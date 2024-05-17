@@ -107,7 +107,15 @@ class Graph
    *
    * @param start_node Where to start scrambling from
    */
-  unsigned Scramble(unsigned start_node, unsigned exit_node) noexcept;
+  void Scramble(unsigned start_node, unsigned exit_node) noexcept;
+
+  /**
+   * Removes a given percentage of walls randomly
+   *
+   * @param percentage Percentage of walls to remove
+   */
+  void RemoveRandomWalls(uint percentage) noexcept;
+
   /**
    * Prints the adjacency matrix for the graph, where 1 represents a wall and 0
    * something else

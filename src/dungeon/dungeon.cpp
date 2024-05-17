@@ -1,7 +1,7 @@
 #pragma once
 
 #include "../../include/dungeon/dungeon.h"
-#include <iostream>
+
 
 Graph* Dungeon::get_graph() noexcept {
     return &graph;
@@ -19,5 +19,6 @@ Dungeon::Dungeon(unsigned width, unsigned height, unsigned start_x, unsigned sta
 
   graph.GenerateBaseGraph();
   graph.Scramble(start_cell, exit_cell);
+  graph.RemoveRandomWalls(10);
   // graph.PrintAjacencyMatrix();
 }

@@ -1,4 +1,3 @@
-#pragma once
 #include "../../include/graph/graph.h"
 
 #include <algorithm>
@@ -48,7 +47,7 @@ void Graph::GenerateBaseGraph() noexcept
   }
 }
 
-unsigned Graph::Scramble(unsigned start_node, unsigned exit_node) noexcept
+void Graph::Scramble(unsigned start_node, unsigned exit_node) noexcept
 {
   const unsigned number_of_nodes = w * h;
 
@@ -86,10 +85,24 @@ unsigned Graph::Scramble(unsigned start_node, unsigned exit_node) noexcept
 
       visited[neighbor] = true;
       stack.push_back(neighbor);
-
     }
   }
-  return exit;
+}
+
+void Graph::RemoveRandomWalls(uint percentage) noexcept
+{
+
+  std::random_device rand;
+  std::mt19937       gen{rand()};
+  std::uniform_int_distribution<unsigned> randomizer(0, 100);
+
+  for (unsigned i = 0; i < data.size()-1; i++) {
+      if (data[i].type != WALLED) continue;
+      if (randomizer(gen) > percentage) continue;
+
+      data[i].type = NO_ITEM;
+
+  }
 }
 
 Graph::Graph(unsigned width, unsigned height) noexcept(false)
