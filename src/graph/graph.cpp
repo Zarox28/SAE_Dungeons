@@ -22,7 +22,9 @@ void Graph::set_height(unsigned height) noexcept(false)
 void Graph::GenerateBaseGraph() noexcept
 {
   const unsigned number_of_nodes = (h * w);
-  data.resize(number_of_nodes * number_of_nodes, Connection { .type = UNREACHABLE, .value = 0 });
+  data.resize(
+    number_of_nodes * number_of_nodes, Connection { .type = UNREACHABLE, .value = 0 }
+  );
 
   for (unsigned row = 0; row < h; row++)
   {
@@ -33,8 +35,12 @@ void Graph::GenerateBaseGraph() noexcept
       {
         // Connect to the node on the right
         unsigned next_on_line = current_node + 1;
-        set_connection_between(current_node, next_on_line, { .type = WALLED, .value = 0 });
-        set_connection_between(next_on_line, current_node, { .type = WALLED, .value = 0 });
+        set_connection_between(
+          current_node, next_on_line, { .type = WALLED, .value = 0 }
+        );
+        set_connection_between(
+          next_on_line, current_node, { .type = WALLED, .value = 0 }
+        );
       }
       if (row + 1 < h)
       {
@@ -91,17 +97,41 @@ void Graph::Scramble(unsigned start_node, unsigned exit_node) noexcept
 
 void Graph::RemoveRandomWalls(uint percentage) noexcept
 {
+  std::random_device                        rand;
+  std::mt19937                              gen { rand() };
+  std::uniform_int_distribution< unsigned > randomizer(0, 100);
 
-  std::random_device rand;
-  std::mt19937       gen{rand()};
-  std::uniform_int_distribution<unsigned> randomizer(0, 100);
+  for (unsigned i = 0; i < data.size() - 1; i++)
+  {
+    if (data[i].type != WALLED) continue;
+    if (randomizer(gen) > percentage) continue;
 
-  for (unsigned i = 0; i < data.size()-1; i++) {
-      if (data[i].type != WALLED) continue;
-      if (randomizer(gen) > percentage) continue;
+    data[i].type = NO_ITEM;
+  }
+}
 
-      data[i].type = NO_ITEM;
+void Graph::PlaceItems() noexcept
+{
+  std::random_device                        rand;
+  std::mt19937                              gen { rand() };
+  std::uniform_int_distribution< unsigned > randomizer(0, 100);
+  std::uniform_int_distribution< unsigned > random_value(0, 20);
 
+  for (unsigned i = 0; i < data.size() - 1; i++)
+  {
+    if (data[i].type != NO_ITEM) continue;
+    if (randomizer(gen) > 10) continue;
+
+    unsigned item_type = randomizer(gen) % 3;
+
+    if (item_type == 0 && randomizer(gen) > 50)
+      data[i].type = TREASURE;
+    else if (item_type == 1)
+      data[i].type = HEALTH_PACK;
+    else
+      data[i].type = MONSTER;
+
+    data[i].value = random_value(gen);
   }
 }
 
@@ -136,7 +166,9 @@ Connection Graph::get_connection_between(unsigned node_a, unsigned node_b) noexc
   return this->data[node_a * w * h + node_b];
 }
 
-void Graph::set_connection_between(unsigned node_a, unsigned node_b, Connection connection) noexcept
+void Graph::set_connection_between(
+  unsigned node_a, unsigned node_b, Connection connection
+) noexcept
 {
   this->data[node_a * w * h + node_b] = connection;
 }
