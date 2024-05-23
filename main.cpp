@@ -31,9 +31,6 @@ int main()
   InitWindow(WINDOW_WIDTH, WINDOW_HEIGHT, "SAE Dungeons - AK | GO | AM");
   SetTargetFPS(60);
 
-  // Textures
-  // TODO: Create and load textures
-
   while (! WindowShouldClose())
   {
     if (IsKeyDown(KEY_EQUAL)) cell_size++;
@@ -47,11 +44,6 @@ int main()
        offset_x  = 120;
        offset_y  = 0;
        cell_size = 15;
-    }
-
-    if (IsKeyPressed(KEY_SPACE)) {
-        d = new Dungeon(dungeon_width, dungeon_height, 0, 0, dungeon_width-1, dungeon_height-1);
-        g = d->get_graph();
     }
 
     BeginDrawing();
@@ -140,23 +132,22 @@ int main()
     DrawRectangleRec({.x = 0, .y = 0, .width = 250, .height = WINDOW_HEIGHT}, WHITE);
 
     GuiLabel(Rectangle{.x = 90, .y = 0, .width = 100, .height=20}, "Paramètres");
-    GuiSpinner(Rectangle{.x = 120, .y = 50, .width = 100, .height=20},"Largeur dongeon   ", (int*)&spinbox_width, 3, 110, false);
-    GuiSpinner(Rectangle{.x = 120, .y =70, .width = 100, .height=20},"Heuteur du dongeon", (int*)&spinbox_height, 3, 110, false);
+    GuiSpinner(Rectangle{.x = 120, .y = 50, .width = 100, .height=20},"Largeur dongeon   ", (int*)&spinbox_width, 10, 300, false);
+    GuiSpinner(Rectangle{.x = 120, .y =70, .width = 100, .height=20},"Heuteur du dongeon", (int*)&spinbox_height, 10, 300, false);
 
     GuiSpinner(Rectangle{.x = 30, .y = 20, .width = 90, .height=20},"X", (int*)&spinbox_x, 0, spinbox_width-1, false);
     GuiSpinner(Rectangle{.x = 135, .y = 20, .width = 90, .height=20},"Y", (int*)&spinbox_y, 0, spinbox_height-1, false);
 
     if(GuiButton(Rectangle{.x = 20, .y = 130, .width = 210, .height=20}, "Générer le dongeon")) {
+        d->suicide();
         dungeon_width = spinbox_width;
         dungeon_height = spinbox_height;
         d = new Dungeon(dungeon_width, dungeon_height, spinbox_x, spinbox_y, dungeon_width-1, dungeon_height-1);
         g = d->get_graph();
     }
 
-
     EndDrawing();
   }
-  // TODO: Unload textures
 
   CloseWindow();
 }

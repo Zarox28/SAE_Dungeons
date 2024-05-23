@@ -131,6 +131,8 @@ class Graph
 
   /// Creates a basic graph where all possible walls exists
   void GenerateBaseGraph() noexcept;
+  void Suicide() noexcept;
+
 
   /**
    * Initializes a graph with provided width and height

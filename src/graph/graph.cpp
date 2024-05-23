@@ -172,3 +172,8 @@ void Graph::set_connection_between(
 {
   this->data[node_a * w * h + node_b] = connection;
 }
+
+void Graph::Suicide() noexcept {
+    data.clear();
+    delete this;
+}
