@@ -5,12 +5,18 @@
 Graph* Dungeon::get_graph() noexcept { return &graph; }
 
 Dungeon::Dungeon(
-  unsigned width, unsigned height, unsigned start_x, unsigned start_y, unsigned end_x, unsigned end_y
-) noexcept(false) :
-  graph(width, height)
+  unsigned width,
+  unsigned height,
+  unsigned start_x,
+  unsigned start_y,
+  unsigned end_x,
+  unsigned end_y
+) noexcept(false) : graph(width, height)
 {
-  if (start_x > width - 1 || start_y > height - 1) throw new DungeonException("Invalid start position");
-  if (end_x > width - 1 || end_y > height - 1) throw new DungeonException("Invalid end position");
+  if (start_x > width - 1 || start_y > height - 1)
+    throw new DungeonException("Invalid start position");
+  if (end_x > width - 1 || end_y > height - 1)
+    throw new DungeonException("Invalid end position");
 
   start_cell = start_y * width + start_x;
   exit_cell  = end_y * width + end_x;
@@ -20,9 +26,11 @@ Dungeon::Dungeon(
   graph.RemoveRandomWalls(10);
   graph.PlaceItems();
   // graph.PrintAjacencyMatrix();
+  graph.DFSFindPath(start_cell, exit_cell);
 }
 
-void Dungeon::suicide() {
-    graph.Suicide();
-    // delete this;
+void Dungeon::suicide()
+{
+  graph.Suicide();
+  // delete this;
 }
