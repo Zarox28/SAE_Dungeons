@@ -11,16 +11,17 @@
 
 int main()
 {
-  unsigned dungeon_width = 30;
+  unsigned dungeon_width  = 30;
   unsigned dungeon_height = 30;
-  unsigned spinbox_width = dungeon_width;
+  unsigned spinbox_width  = dungeon_width;
   unsigned spinbox_height = dungeon_width;
-  unsigned spinbox_x = 0;
-  unsigned spinbox_y = 0;
+  unsigned spinbox_x      = 0;
+  unsigned spinbox_y      = 0;
 
-
-  Dungeon* d = new Dungeon(dungeon_width, dungeon_height, 0, 0, dungeon_width-1, dungeon_height-1);
-  Graph*   g = d->get_graph();
+  Dungeon* d = new Dungeon(
+    dungeon_width, dungeon_height, 0, 0, dungeon_width - 1, dungeon_height - 1
+  );
+  Graph* g = d->get_graph();
 
   const unsigned wall_ratio    = 10;
   const unsigned panning_speed = 20;
@@ -41,10 +42,12 @@ int main()
     if (IsKeyDown(KEY_DOWN)) offset_y -= panning_speed;
     if (IsKeyDown(KEY_R))
     {
-       offset_x  = 120;
-       offset_y  = 0;
-       cell_size = 15;
+      offset_x  = 120;
+      offset_y  = 0;
+      cell_size = 15;
     }
+
+    std::vector< unsigned > path = g->DFSFindPath(d->start_cell, d->exit_cell);
 
     BeginDrawing();
     ClearBackground(BLACK);
@@ -60,11 +63,14 @@ int main()
 
         if (cellNum == d->start_cell) cell_color = RED;
         if (cellNum == d->exit_cell) cell_color = GREEN;
+        if (std::find(path.begin(), path.end(), cellNum) != path.end()) cell_color = RED;
 
         // Draw cells
         DrawRectangleV(
-          { .x = offset_x + (float) cell_size * cellX + WINDOW_WIDTH / 2 - (dungeon_width * cell_size) / 2,
-            .y = offset_y + (float) cell_size * cellY + WINDOW_HEIGHT / 2 - (dungeon_height * cell_size) / 2 },
+          { .x = offset_x + (float) cell_size * cellX + WINDOW_WIDTH / 2
+               - (dungeon_width * cell_size) / 2,
+            .y = offset_y + (float) cell_size * cellY + WINDOW_HEIGHT / 2
+               - (dungeon_height * cell_size) / 2 },
           { .x = cell_size - wall_size, .y = cell_size - wall_size },
           cell_color
         );
@@ -87,13 +93,18 @@ int main()
             case MONSTER     : wall_color = GREEN; break;
             case HEALTH_PACK : wall_color = RED; break;
             case TREASURE    : wall_color = YELLOW; break;
-            default          : wall_color = BLUE; break;  // for debugging, we should never see a blue wall
+            default :
+              wall_color = BLUE;
+              break;  // for debugging, we should never see a blue wall
           }
 
           DrawRectangleV(
-            { .x = offset_x + ((float) cell_size * cellX + WINDOW_WIDTH / 2 - (dungeon_width * cell_size) / 2)
+            { .x = offset_x
+                 + ((float) cell_size * cellX + WINDOW_WIDTH / 2
+                    - (dungeon_width * cell_size) / 2)
                  + cell_size - wall_size,
-              .y = offset_y + (float) cell_size * cellY + WINDOW_HEIGHT / 2 - (dungeon_height * cell_size) / 2 },
+              .y = offset_y + (float) cell_size * cellY + WINDOW_HEIGHT / 2
+                 - (dungeon_height * cell_size) / 2 },
             { .x = wall_size, .y = (float) cell_size - (float) cell_size / wall_ratio },
             wall_color
           );
@@ -112,14 +123,18 @@ int main()
             case MONSTER     : wall_color = GREEN; break;
             case HEALTH_PACK : wall_color = RED; break;
             case TREASURE    : wall_color = YELLOW; break;
-            default          : wall_color = BLUE; break;  // for debugging, we should never see a blue wall
+            default :
+              wall_color = BLUE;
+              break;  // for debugging, we should never see a blue wall
           }
 
           DrawRectangleV(
-            { .x = offset_x + (float) cell_size * cellX + WINDOW_WIDTH / 2 - (dungeon_width * cell_size) / 2,
-              .y = offset_y + ((float) cell_size * cellY + WINDOW_HEIGHT / 2 - (dungeon_height * cell_size) / 2)
-                               + cell_size - wall_size
- },
+            { .x = offset_x + (float) cell_size * cellX + WINDOW_WIDTH / 2
+                 - (dungeon_width * cell_size) / 2,
+              .y = offset_y
+                 + ((float) cell_size * cellY + WINDOW_HEIGHT / 2
+                    - (dungeon_height * cell_size) / 2)
+                 + cell_size - wall_size },
             { .x = (float) cell_size - (float) cell_size / wall_ratio, .y = wall_size },
             wall_color
           );
@@ -129,25 +144,64 @@ int main()
 
     // UI
 
-    DrawRectangleRec({.x = 0, .y = 0, .width = 250, .height = WINDOW_HEIGHT}, WHITE);
+    DrawRectangleRec({ .x = 0, .y = 0, .width = 250, .height = WINDOW_HEIGHT }, WHITE);
 
-    GuiLabel(Rectangle{.x = 90, .y = 0, .width = 100, .height=20}, "Paramètres");
-    GuiSpinner(Rectangle{.x = 120, .y = 50, .width = 100, .height=20},"Largeur dongeon   ", (int*)&spinbox_width, 10, 300, false);
-    GuiSpinner(Rectangle{.x = 120, .y =70, .width = 100, .height=20},"Heuteur du dongeon", (int*)&spinbox_height, 10, 300, false);
+    GuiLabel(Rectangle { .x = 90, .y = 0, .width = 100, .height = 20 }, "Paramètres");
+    GuiSpinner(
+      Rectangle { .x = 120, .y = 50, .width = 100, .height = 20 },
+      "Largeur dongeon   ",
+      (int*) &spinbox_width,
+      3,
+      110,
+      false
+    );
+    GuiSpinner(
+      Rectangle { .x = 120, .y = 70, .width = 100, .height = 20 },
+      "Hauteur du dongeon",
+      (int*) &spinbox_height,
+      3,
+      110,
+      false
+    );
 
-    GuiSpinner(Rectangle{.x = 30, .y = 20, .width = 90, .height=20},"X", (int*)&spinbox_x, 0, spinbox_width-1, false);
-    GuiSpinner(Rectangle{.x = 135, .y = 20, .width = 90, .height=20},"Y", (int*)&spinbox_y, 0, spinbox_height-1, false);
+    GuiSpinner(
+      Rectangle { .x = 30, .y = 20, .width = 90, .height = 20 },
+      "X",
+      (int*) &spinbox_x,
+      0,
+      spinbox_width - 1,
+      false
+    );
+    GuiSpinner(
+      Rectangle { .x = 135, .y = 20, .width = 90, .height = 20 },
+      "Y",
+      (int*) &spinbox_y,
+      0,
+      spinbox_height - 1,
+      false
+    );
 
-    if(GuiButton(Rectangle{.x = 20, .y = 130, .width = 210, .height=20}, "Générer le dongeon")) {
-        d->suicide();
-        dungeon_width = spinbox_width;
-        dungeon_height = spinbox_height;
-        d = new Dungeon(dungeon_width, dungeon_height, spinbox_x, spinbox_y, dungeon_width-1, dungeon_height-1);
-        g = d->get_graph();
+    if (GuiButton(
+          Rectangle { .x = 20, .y = 130, .width = 210, .height = 20 },
+          "Générer le dongeon"
+        ))
+    {
+      dungeon_width  = spinbox_width;
+      dungeon_height = spinbox_height;
+      d              = new Dungeon(
+        dungeon_width,
+        dungeon_height,
+        spinbox_x,
+        spinbox_y,
+        dungeon_width - 1,
+        dungeon_height - 1
+      );
+      g = d->get_graph();
     }
 
     EndDrawing();
   }
+  // TODO: Unload textures
 
   CloseWindow();
 }

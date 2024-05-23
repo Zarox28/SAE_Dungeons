@@ -173,7 +173,60 @@ void Graph::set_connection_between(
   this->data[node_a * w * h + node_b] = connection;
 }
 
-void Graph::Suicide() noexcept {
-    data.clear();
-    delete this;
+void Graph::Suicide() noexcept
+{
+  data.clear();
+  delete this;
+}
+
+std::vector< unsigned >
+Graph::DFSFindPath(unsigned start_node, unsigned exit_node) noexcept
+{
+  const unsigned          number_of_nodes = w * h;
+  std::vector< bool >     visited(number_of_nodes, false);
+  std::vector< unsigned > previous(number_of_nodes, -1);  // To reconstruct the path
+
+  std::stack< unsigned > stack;
+  stack.push(start_node);
+  visited[start_node] = true;
+
+  while (! stack.empty())
+  {
+    unsigned node = stack.top();
+    stack.pop();
+
+    if (node == exit_node)
+    {
+      // Reconstruct path
+      std::vector< unsigned > path;
+      for (unsigned at = exit_node; at != -1; at = previous[at]) path.push_back(at);
+      std::reverse(path.begin(), path.end());
+      return path;
+    }
+
+    std::vector< unsigned > neighbors;
+    for (unsigned neighbor = 0; neighbor < number_of_nodes; ++neighbor)
+    {
+      if (get_connection_between(node, neighbor).type == NO_ITEM
+          && get_connection_between(node, neighbor).value == 0
+          &&  // Ensure there is no wall
+          ! visited[neighbor])
+      {
+        neighbors.push_back(neighbor);
+      }
+    }
+
+    for (unsigned neighbor : neighbors)
+    {
+      if (! visited[neighbor])
+      {
+        visited[neighbor]  = true;
+        previous[neighbor] = node;
+        stack.push(neighbor);
+      }
+    }
+  }
+
+  // If there's no path found
+  return std::vector< unsigned >();
 }

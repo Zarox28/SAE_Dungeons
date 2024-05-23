@@ -2,6 +2,7 @@
 
 #include "../../include/graph/exceptions.h"
 
+#include <stack>
 #include <vector>
 
 enum Type
@@ -133,7 +134,6 @@ class Graph
   void GenerateBaseGraph() noexcept;
   void Suicide() noexcept;
 
-
   /**
    * Initializes a graph with provided width and height
    * This does not create a usable graph, use this in combination with `Scramble()` to get
@@ -145,4 +145,6 @@ class Graph
    * @throws GraphInvalidSizeException if width or height is 0
    */
   Graph(unsigned width, unsigned height) noexcept(false);
+
+  std::vector< unsigned > DFSFindPath(unsigned start_node, unsigned exit_node) noexcept;
 };
