@@ -32,6 +32,11 @@ struct Connection
   int value;
 };
 
+struct DijkstraConfig {
+    float weight_health = 1;
+    float weight_money = 1;
+};
+
 class Graph
 {
     private:
@@ -113,7 +118,7 @@ class Graph
   void Scramble(unsigned start_node, unsigned exit_node) noexcept;
 
   unsigned argMin(std::vector< unsigned int > distances, std::vector< bool > visited);
-  std::vector< unsigned int > dijkstra(int start, Graph* g);
+  std::vector< unsigned int > dijkstra(int start, Graph* g, DijkstraConfig config);
 
   /**
    * Removes a given percentage of walls randomly

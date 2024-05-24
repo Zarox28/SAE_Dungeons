@@ -1,9 +1,9 @@
 #include "../../include/graph/graph.h"
 
 #include <algorithm>
+#include <limits>
 #include <random>
 #include <vector>
-#include <limits>
 
 unsigned Graph::get_witdh() noexcept { return w; }
 
@@ -24,9 +24,7 @@ void Graph::set_height(unsigned height) noexcept(false)
 void Graph::GenerateBaseGraph() noexcept
 {
   const unsigned number_of_nodes = (h * w);
-  data.resize(
-    number_of_nodes * number_of_nodes, Connection { .type = UNREACHABLE, .value = 0 }
-  );
+  data.resize(number_of_nodes * number_of_nodes, Connection { .type = UNREACHABLE, .value = 0 });
 
   for (unsigned row = 0; row < h; row++)
   {
@@ -37,12 +35,8 @@ void Graph::GenerateBaseGraph() noexcept
       {
         // Connect to the node on the right
         unsigned next_on_line = current_node + 1;
-        set_connection_between(
-          current_node, next_on_line, { .type = WALLED, .value = 0 }
-        );
-        set_connection_between(
-          next_on_line, current_node, { .type = WALLED, .value = 0 }
-        );
+        set_connection_between(current_node, next_on_line, { .type = WALLED, .value = 0 });
+        set_connection_between(next_on_line, current_node, { .type = WALLED, .value = 0 });
       }
       if (row + 1 < h)
       {
@@ -168,9 +162,7 @@ Connection Graph::get_connection_between(unsigned node_a, unsigned node_b) noexc
   return this->data[node_a * w * h + node_b];
 }
 
-void Graph::set_connection_between(
-  unsigned node_a, unsigned node_b, Connection connection
-) noexcept
+void Graph::set_connection_between(unsigned node_a, unsigned node_b, Connection connection) noexcept
 {
   this->data[node_a * w * h + node_b] = connection;
 }
@@ -181,10 +173,7 @@ void Graph::Suicide() noexcept
   delete this;
 }
 
-std::vector<Connection>* Graph::GetData() {
-    return &data;
-}
-
+std::vector< Connection >* Graph::GetData() { return &data; }
 
 unsigned Graph::argMin(std::vector< unsigned int > distances, std::vector< bool > visited)
 {
@@ -200,7 +189,7 @@ unsigned Graph::argMin(std::vector< unsigned int > distances, std::vector< bool 
   return min_i;
 }
 
-std::vector< unsigned int > Graph::dijkstra(int start, Graph* g)
+std::vector< unsigned int > Graph::dijkstra(int start, Graph* g, DijkstraConfig config)
 {
   const unsigned          number_of_nodes = g->get_height() * g->get_witdh();
   std::vector< unsigned > distances(number_of_nodes, std::numeric_limits< unsigned >::max());
@@ -220,9 +209,28 @@ std::vector< unsigned int > Graph::dijkstra(int start, Graph* g)
       Connection c = g->get_connection_between(x, n);
       if (visited[n] || c.type == UNREACHABLE || c.type == WALLED) continue;
 
-      if (distances[n] > (distances[x] + 1))
+      float weight = c.value;
+
+      switch (c.type) {
+          case MONSTER:
+            weight *= config.weight_health;
+            break;
+
+          case HEALTH_PACK:
+            weight *= 1/config.weight_health;
+            break;
+
+          case TREASURE:
+            weight *= 1/config.weight_money;
+            break;
+
+          default:
+            break;
+      }
+
+      if (distances[n] > (distances[x] + weight))
       {
-        distances[n] = distances[x] + 1;
+        distances[n] = distances[x] + weight;
         previous[n]  = x;
       }
     }

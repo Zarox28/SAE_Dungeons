@@ -1,11 +1,15 @@
 #include "include/graph/graph.h"
 
+#include <algorithm>
+#include <cstdio>
 #include <iostream>
 #include <vector>
 
 #define RAYGUI_IMPLEMENTATION
 #define WINDOW_WIDTH  1300
 #define WINDOW_HEIGHT 800
+#define UI_SPACING    20
+#define UI_HEIGHT     20
 
 #include "include/dungeon/dungeon.h"
 #include "libs/raygui/src/raygui.h"
@@ -14,19 +18,22 @@
 
 int main()
 {
-  unsigned dungeon_width  = 5;
-  unsigned dungeon_height = 5;
-  unsigned spinbox_width  = dungeon_width;
-  unsigned spinbox_height = dungeon_width;
-  unsigned spinbox_x      = 0;
-  unsigned spinbox_y      = 0;
+  unsigned dungeon_size = 10;
+  unsigned spinbox_size = dungeon_size;
 
-  Dungeon* d = new Dungeon(dungeon_width, dungeon_height, 0, 0, dungeon_width - 1, dungeon_height - 1);
+  unsigned spinbox_entree_x = 0;
+  unsigned spinbox_entree_y = 0;
+
+  unsigned spinbox_exit_x = dungeon_size - 1;
+  unsigned spinbox_exit_y = dungeon_size - 1;
+
+  DijkstraConfig config = {};
+
+  Dungeon* d = new Dungeon(dungeon_size, dungeon_size, 0, 0, dungeon_size - 1, dungeon_size - 1);
   Graph*   g = d->get_graph();
 
-  const std::vector< unsigned > path = g->dijkstra(0, g);
-
-  for (unsigned i = 0; i < path.size(); i++) std::cout << "Node: " << i << "Previous: " << path[i] << std::endl;
+  std::vector< unsigned > path_of_exile;
+  unsigned                path_index = 0;
 
   const unsigned wall_ratio    = 10;
   const unsigned panning_speed = 20;
@@ -56,33 +63,43 @@ int main()
 
     BeginDrawing();
     ClearBackground(BLACK);
-    for (unsigned cellY = 0; cellY < dungeon_height; cellY++)
+    for (unsigned cellY = 0; cellY < dungeon_size; cellY++)
     {
-      for (unsigned cellX = 0; cellX < dungeon_width; cellX++)
+      for (unsigned cellX = 0; cellX < dungeon_size; cellX++)
       {
-        const unsigned cellNum   = cellY * dungeon_width + cellX;
+        const unsigned cellNum   = cellY * dungeon_size + cellX;
         const float    wall_size = (float) cell_size / wall_ratio;
+
+        const float x = offset_x + (float) cell_size * cellX + WINDOW_WIDTH / 2 - (dungeon_size * cell_size) / 2;
+        const float y = offset_y + (float) cell_size * cellY + WINDOW_HEIGHT / 2 - (dungeon_size * cell_size) / 2;
+
         // TODO: Use textures instead of colored rectangles
         Color wall_color;
         Color cell_color = GRAY;
 
         if (cellNum == d->start_cell) cell_color = RED;
         if (cellNum == d->exit_cell) cell_color = GREEN;
-        // if (std::find(path.begin(), path.end(), cellNum) != path.end()) cell_color = RED;
 
         // Draw cells
-        DrawRectangleV(
-          { .x = offset_x + (float) cell_size * cellX + WINDOW_WIDTH / 2 - (dungeon_width * cell_size) / 2,
-            .y = offset_y + (float) cell_size * cellY + WINDOW_HEIGHT / 2 - (dungeon_height * cell_size) / 2 },
-          { .x = cell_size - wall_size, .y = cell_size - wall_size },
-          cell_color
-        );
+        DrawRectangleV({ .x = x, .y = y }, { .x = cell_size - wall_size, .y = cell_size - wall_size }, cell_color);
+
+        if (std::find(path_of_exile.begin(), path_of_exile.end(), cellNum) != path_of_exile.end())
+          DrawCircle(x + cell_size / 2 - 5 / 2, y + cell_size / 2 - 5 / 2, cell_size / 5, PINK);
+        ;
+
+        // if (path_index < path_of_exile.size() && cellNum == path_of_exile[path_index])
+        // {
+        //   // cell_color = PINK;
+        //   DrawCircle(x + cell_size / 2 - 5 / 2, y + cell_size / 2 - 5 / 2, cell_size / 5, PINK);
+        //   path_index++;
+        //   path_index %= path_of_exile.size();
+        // };
 
         // Draw walls, we already calculated the orientation of every wall
         // when generating the base graph, but we redo it again here, the small
         // speed benefit does not outcome the storage space we will need to store it
 
-        if (cellX + 1 < dungeon_width)
+        if (cellX + 1 < dungeon_size)
         {
           // Get the the connection type between the current cell
           // and the following one
@@ -100,18 +117,18 @@ int main()
           }
 
           DrawRectangleV(
-            { .x = offset_x + ((float) cell_size * cellX + WINDOW_WIDTH / 2 - (dungeon_width * cell_size) / 2)
+            { .x = offset_x + ((float) cell_size * cellX + WINDOW_WIDTH / 2 - (dungeon_size * cell_size) / 2)
                  + cell_size - wall_size,
-              .y = offset_y + (float) cell_size * cellY + WINDOW_HEIGHT / 2 - (dungeon_height * cell_size) / 2 },
+              .y = offset_y + (float) cell_size * cellY + WINDOW_HEIGHT / 2 - (dungeon_size * cell_size) / 2 },
             { .x = wall_size, .y = (float) cell_size - (float) cell_size / wall_ratio },
             wall_color
           );
         }
-        if (cellY + 1 < dungeon_width)
+        if (cellY + 1 < dungeon_size)
         {
           // Get the connection type between the current cell
           // and it's direct bottom one
-          unsigned below = cellNum + dungeon_width;
+          unsigned below = cellNum + dungeon_size;
 
           // Render the wall
           switch (g->get_connection_between(cellNum, below).type)
@@ -125,8 +142,8 @@ int main()
           }
 
           DrawRectangleV(
-            { .x = offset_x + (float) cell_size * cellX + WINDOW_WIDTH / 2 - (dungeon_width * cell_size) / 2,
-              .y = offset_y + ((float) cell_size * cellY + WINDOW_HEIGHT / 2 - (dungeon_height * cell_size) / 2)
+            { .x = offset_x + (float) cell_size * cellX + WINDOW_WIDTH / 2 - (dungeon_size * cell_size) / 2,
+              .y = offset_y + ((float) cell_size * cellY + WINDOW_HEIGHT / 2 - (dungeon_size * cell_size) / 2)
                  + cell_size - wall_size },
             { .x = (float) cell_size - (float) cell_size / wall_ratio, .y = wall_size },
             wall_color
@@ -138,43 +155,106 @@ int main()
     // UI
 
     DrawRectangleRec({ .x = 0, .y = 0, .width = 250, .height = WINDOW_HEIGHT }, WHITE);
+    // DrawRectangleRec({ .x = 0, .y = WINDOW_HEIGHT-50, .width = WINDOW_WIDTH, .height = 50 }, WHITE);
 
     GuiLabel(Rectangle { .x = 90, .y = 0, .width = 100, .height = 20 }, "Paramètres");
     GuiSpinner(
-      Rectangle { .x = 120, .y = 50, .width = 100, .height = 20 },
-      "Largeur dongeon   ",
-      (int*) &spinbox_width,
-      3,
-      110,
-      false
-    );
-    GuiSpinner(
-      Rectangle { .x = 120, .y = 70, .width = 100, .height = 20 },
-      "Hauteur du dongeon",
-      (int*) &spinbox_height,
+      Rectangle { .x = 120, .y = UI_SPACING, .width = 100, .height = 20 },
+      "Taille dongeon   ",
+      (int*) &spinbox_size,
       3,
       110,
       false
     );
 
+    GuiLabel(Rectangle { .x = 10, .y = UI_HEIGHT + UI_SPACING, .width = 100, .height = 20 }, "Position entrée");
+
     GuiSpinner(
-      Rectangle { .x = 30, .y = 20, .width = 90, .height = 20 }, "X", (int*) &spinbox_x, 0, spinbox_width - 1, false
+      Rectangle { .x = 30, .y = UI_HEIGHT + UI_SPACING * 2, .width = 90, .height = 20 },
+      "X",
+      (int*) &spinbox_entree_x,
+      0,
+      spinbox_size - 1,
+      false
     );
     GuiSpinner(
-      Rectangle { .x = 135, .y = 20, .width = 90, .height = 20 }, "Y", (int*) &spinbox_y, 0, spinbox_height - 1, false
+      Rectangle { .x = 135, .y = UI_HEIGHT + UI_SPACING * 2, .width = 90, .height = 20 },
+      "Y",
+      (int*) &spinbox_entree_y,
+      0,
+      spinbox_size - 1,
+      false
     );
 
-    if (GuiButton(Rectangle { .x = 20, .y = 130, .width = 210, .height = 20 }, "Générer le dongeon"))
+    GuiLabel(Rectangle { .x = 10, .y = UI_HEIGHT + UI_SPACING * 3, .width = 100, .height = 20 }, "Position sortie");
+
+    GuiSpinner(
+      Rectangle { .x = 30, .y = UI_HEIGHT + UI_SPACING * 4, .width = 90, .height = 20 },
+      "X",
+      (int*) &spinbox_exit_x,
+      0,
+      spinbox_size - 1,
+      false
+    );
+    GuiSpinner(
+      Rectangle { .x = 135, .y = UI_HEIGHT + UI_SPACING * 4, .width = 90, .height = 20 },
+      "Y",
+      (int*) &spinbox_exit_y,
+      0,
+      spinbox_size - 1,
+      false
+    );
+
+    if (GuiButton(
+          Rectangle { .x = 20, .y = UI_HEIGHT + UI_SPACING * 5.5, .width = 210, .height = 20 }, "Générer le dongeon"
+        ))
     {
-      dungeon_width  = spinbox_width;
-      dungeon_height = spinbox_height;
-      d = new Dungeon(dungeon_width, dungeon_height, spinbox_x, spinbox_y, dungeon_width - 1, dungeon_height - 1);
+      dungeon_size = spinbox_size;
+      path_index   = 0;
+      path_of_exile.clear();
+      // dungeon_height = spinbox_size;
+      d = new Dungeon(dungeon_size, dungeon_size, spinbox_entree_x, spinbox_entree_y, spinbox_exit_x, spinbox_exit_y);
       g = d->get_graph();
     }
 
+    GuiSlider(
+      Rectangle { .x = 115, .y = UI_HEIGHT + UI_SPACING * 7, .width = 90, .height = 20 },
+      "Priorité Vie: 0",
+      "5",
+      &config.weight_health,
+      0,
+      5
+    );
+    GuiSlider(
+      Rectangle { .x = 115, .y = UI_HEIGHT + UI_SPACING * 8.5, .width = 90, .height = 20 },
+      "Priorité Trésore: 0",
+      "5",
+      &config.weight_money,
+      0,
+      5
+    );
+
+    if (GuiButton(
+          Rectangle { .x = 20, .y = UI_HEIGHT + UI_SPACING * 10, .width = 210, .height = 20 }, "Trouver chemin"
+        ))
+    {
+      path_index = 0;
+      path_of_exile.clear();
+
+      const std::vector< unsigned > previouses = g->dijkstra(0, g, config);
+      for (unsigned i = 0; i < previouses.size(); i++)
+        std::cout << "Node: " << i << " Previous: " << previouses[i] << std::endl;
+      unsigned current_node = d->exit_cell;
+      path_of_exile.clear();
+
+      while (current_node != d->start_cell)
+      {
+        path_of_exile.push_back(current_node);
+        // printf("%d->", current_node);
+        current_node = previouses[current_node];
+      }
+    }
     EndDrawing();
   }
-  // TODO: Unload textures
-
   CloseWindow();
 }
