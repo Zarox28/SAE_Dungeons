@@ -73,6 +73,12 @@ int main()
         const float x = offset_x + (float) cell_size * cellX + WINDOW_WIDTH / 2 - (dungeon_size * cell_size) / 2;
         const float y = offset_y + (float) cell_size * cellY + WINDOW_HEIGHT / 2 - (dungeon_size * cell_size) / 2;
 
+        // Simple occlusion;
+        // Stop rendering this line of a cell is out of bounds
+        if (x > WINDOW_WIDTH) break;
+        if (x < 0 || y+cell_size < 0 || y > WINDOW_HEIGHT) continue;  // skip this cell if oob
+
+
         // TODO: Use textures instead of colored rectangles
         Color wall_color;
         Color cell_color = GRAY;
