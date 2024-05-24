@@ -26,7 +26,6 @@ Dungeon::Dungeon(
   graph.RemoveRandomWalls(10);
   graph.PlaceItems();
   // graph.PrintAjacencyMatrix();
-  graph.DFSFindPath(start_cell, exit_cell);
 }
 
 void Dungeon::suicide()

@@ -112,6 +112,9 @@ class Graph
    */
   void Scramble(unsigned start_node, unsigned exit_node) noexcept;
 
+  unsigned argMin(std::vector< unsigned int > distances, std::vector< bool > visited);
+  std::vector< unsigned int > dijkstra(int start, Graph* g);
+
   /**
    * Removes a given percentage of walls randomly
    *
@@ -129,6 +132,7 @@ class Graph
    * something else
    */
   void PrintAjacencyMatrix();
+  std::vector<Connection>* GetData();
 
   /// Creates a basic graph where all possible walls exists
   void GenerateBaseGraph() noexcept;
@@ -145,6 +149,4 @@ class Graph
    * @throws GraphInvalidSizeException if width or height is 0
    */
   Graph(unsigned width, unsigned height) noexcept(false);
-
-  std::vector< unsigned > DFSFindPath(unsigned start_node, unsigned exit_node) noexcept;
 };

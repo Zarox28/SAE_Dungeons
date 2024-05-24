@@ -2,6 +2,8 @@
 
 #include <algorithm>
 #include <random>
+#include <vector>
+#include <limits>
 
 unsigned Graph::get_witdh() noexcept { return w; }
 
@@ -179,54 +181,51 @@ void Graph::Suicide() noexcept
   delete this;
 }
 
-std::vector< unsigned >
-Graph::DFSFindPath(unsigned start_node, unsigned exit_node) noexcept
+std::vector<Connection>* Graph::GetData() {
+    return &data;
+}
+
+
+unsigned Graph::argMin(std::vector< unsigned int > distances, std::vector< bool > visited)
 {
-  const unsigned          number_of_nodes = w * h;
-  std::vector< bool >     visited(number_of_nodes, false);
-  std::vector< unsigned > previous(number_of_nodes, -1);  // To reconstruct the path
-
-  std::stack< unsigned > stack;
-  stack.push(start_node);
-  visited[start_node] = true;
-
-  while (! stack.empty())
+  unsigned min   = std::numeric_limits< unsigned >::max();
+  unsigned min_i = min;
+  for (unsigned i = 0; i < distances.size(); i++)
   {
-    unsigned node = stack.top();
-    stack.pop();
+    if (visited[i]) continue;
+    if (distances[i] > min) continue;
+    min   = distances[i];
+    min_i = i;
+  }
+  return min_i;
+}
 
-    if (node == exit_node)
-    {
-      // Reconstruct path
-      std::vector< unsigned > path;
-      for (unsigned at = exit_node; at != -1; at = previous[at]) path.push_back(at);
-      std::reverse(path.begin(), path.end());
-      return path;
-    }
+std::vector< unsigned int > Graph::dijkstra(int start, Graph* g)
+{
+  const unsigned          number_of_nodes = g->get_height() * g->get_witdh();
+  std::vector< unsigned > distances(number_of_nodes, std::numeric_limits< unsigned >::max());
+  std::vector< unsigned > previous(number_of_nodes, 0);
+  std::vector< bool >     visited(number_of_nodes, false);
 
-    std::vector< unsigned > neighbors;
-    for (unsigned neighbor = 0; neighbor < number_of_nodes; ++neighbor)
+  // d[x0] ← 0
+  distances[start] = 0;
+
+  for (unsigned i = 0; i < number_of_nodes; i++)
+  {
+    unsigned x = argMin(distances, visited);
+    visited[x] = true;
+
+    for (unsigned n = 0; n < number_of_nodes; n++)
     {
-      if (get_connection_between(node, neighbor).type == NO_ITEM
-          && get_connection_between(node, neighbor).value == 0
-          &&  // Ensure there is no wall
-          ! visited[neighbor])
+      Connection c = g->get_connection_between(x, n);
+      if (visited[n] || c.type == UNREACHABLE || c.type == WALLED) continue;
+
+      if (distances[n] > (distances[x] + 1))
       {
-        neighbors.push_back(neighbor);
-      }
-    }
-
-    for (unsigned neighbor : neighbors)
-    {
-      if (! visited[neighbor])
-      {
-        visited[neighbor]  = true;
-        previous[neighbor] = node;
-        stack.push(neighbor);
+        distances[n] = distances[x] + 1;
+        previous[n]  = x;
       }
     }
   }
-
-  // If there's no path found
-  return std::vector< unsigned >();
+  return previous;
 }

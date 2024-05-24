@@ -6,12 +6,6 @@ pub fn build(b: *std.Build) void {
 
     const optimize = b.standardOptimizeOption(.{});
 
-    const ressources = b.addInstallDirectory(.{
-        .source_dir = .{ .path = "res" },
-        .install_dir = .{ .prefix = {} },
-        .install_subdir = "res",
-    });
-
     const exe = b.addExecutable(.{
         .name = "dungeon",
         .target = target,
@@ -22,8 +16,8 @@ pub fn build(b: *std.Build) void {
 
     exe.linkLibCpp();
     exe.linkLibrary(lib);
-    exe.addIncludePath(std.Build.LazyPath.relative("libs/raylib/src"));
-    exe.addIncludePath(std.Build.LazyPath.relative("include"));
+    exe.addIncludePath(b.path("libs/raylib/src"));
+    exe.addIncludePath(b.path("include"));
     exe.addCSourceFiles(.{
         .files = &.{
             "main.cpp",
@@ -33,7 +27,6 @@ pub fn build(b: *std.Build) void {
     });
 
     b.installArtifact(exe);
-    ressources.step.dependOn(b.getInstallStep());
 
     const run_cmd = b.addRunArtifact(exe);
 
