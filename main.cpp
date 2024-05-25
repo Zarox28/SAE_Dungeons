@@ -59,8 +59,6 @@ int main()
       cell_size = 15;
     }
 
-    // std::vector< unsigned > path = g->DFSFindPath(d->start_cell, d->exit_cell);
-
     BeginDrawing();
     ClearBackground(BLACK);
     for (unsigned cellY = 0; cellY < dungeon_size; cellY++)
@@ -169,7 +167,7 @@ int main()
       "Taille dongeon   ",
       (int*) &spinbox_size,
       3,
-      110,
+      255,
       false
     );
 

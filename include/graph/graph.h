@@ -5,7 +5,7 @@
 #include <stack>
 #include <vector>
 
-enum Type
+enum Type:char
 {
   /// The two cells cannot be connected, most likely they are not neighbors
   UNREACHABLE,
@@ -29,7 +29,7 @@ struct Connection
    * Any integer value related to the type of the connection,
    * might be health gainned or losed, treasure increase
    */
-  int value;
+  short value;
 };
 
 struct DijkstraConfig {
