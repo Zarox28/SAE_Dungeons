@@ -247,7 +247,7 @@ int main()
       path_index = 0;
       path_of_exile.clear();
 
-      const std::vector< unsigned > previouses = g->dijkstra(0, g, config);
+      const std::vector< unsigned > previouses = g->dijkstra(d->start_cell, g, config);
       for (unsigned i = 0; i < previouses.size(); i++)
         std::cout << "Node: " << i << " Previous: " << previouses[i] << std::endl;
       unsigned current_node = d->exit_cell;
