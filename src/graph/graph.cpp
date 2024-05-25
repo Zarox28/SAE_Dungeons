@@ -189,7 +189,7 @@ unsigned Graph::argMin(std::vector< unsigned int > distances, std::vector< bool 
   return min_i;
 }
 
-std::vector< unsigned int > Graph::dijkstra(int start, Graph* g, DijkstraConfig config)
+std::vector< unsigned int > Graph::dijkstra(int start, int end, Graph* g, DijkstraConfig config)
 {
   const unsigned          number_of_nodes = g->get_height() * g->get_witdh();
   std::vector< unsigned > distances(number_of_nodes, std::numeric_limits< unsigned >::max());
@@ -204,6 +204,8 @@ std::vector< unsigned int > Graph::dijkstra(int start, Graph* g, DijkstraConfig 
     unsigned x = argMin(distances, visited);
     visited[x] = true;
 
+    if (x == end) return previous;
+
     for (unsigned n = 0; n < number_of_nodes; n++)
     {
       Connection c = g->get_connection_between(x, n);
@@ -211,21 +213,15 @@ std::vector< unsigned int > Graph::dijkstra(int start, Graph* g, DijkstraConfig 
 
       float weight = c.value;
 
-      switch (c.type) {
-          case MONSTER:
-            weight *= config.weight_health;
-            break;
+      switch (c.type)
+      {
+        case MONSTER : weight *= config.weight_health; break;
 
-          case HEALTH_PACK:
-            weight *= 1/config.weight_health;
-            break;
+        case HEALTH_PACK : weight *= 1 / config.weight_health; break;
 
-          case TREASURE:
-            weight *= 1/config.weight_money;
-            break;
+        case TREASURE : weight *= 1 / config.weight_money; break;
 
-          default:
-            break;
+        default : break;
       }
 
       if (distances[n] > (distances[x] + weight))

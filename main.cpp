@@ -226,18 +226,18 @@ int main()
     GuiSlider(
       Rectangle { .x = 115, .y = UI_HEIGHT + UI_SPACING * 7, .width = 90, .height = 20 },
       "Priorité Vie: 0",
-      "5",
+      "10",
       &config.weight_health,
       0,
-      5
+      10
     );
     GuiSlider(
       Rectangle { .x = 115, .y = UI_HEIGHT + UI_SPACING * 8.5, .width = 90, .height = 20 },
       "Priorité Trésore: 0",
-      "5",
+      "10",
       &config.weight_money,
       0,
-      5
+      10
     );
 
     if (GuiButton(
@@ -247,7 +247,7 @@ int main()
       path_index = 0;
       path_of_exile.clear();
 
-      const std::vector< unsigned > previouses = g->dijkstra(d->start_cell, g, config);
+      const std::vector< unsigned > previouses = g->dijkstra(d->start_cell, d->exit_cell, g, config);
       for (unsigned i = 0; i < previouses.size(); i++)
         std::cout << "Node: " << i << " Previous: " << previouses[i] << std::endl;
       unsigned current_node = d->exit_cell;
