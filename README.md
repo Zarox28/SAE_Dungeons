@@ -1,5 +1,9 @@
 # <div align="center">SAE Donjon</div>
 
+<div align="center"><img src="assets/preview.png"/></div>
+
+---
+
 ## Auteurs
 
 - Alexian Kujawski
