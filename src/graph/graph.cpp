@@ -82,8 +82,8 @@ void Graph::Scramble(unsigned start_node, unsigned exit_node) noexcept
     {
       if (visited[neighbor]) continue;
 
-      set_connection_between(cell, neighbor, { .type = NO_ITEM, .value = 0 });
-      set_connection_between(neighbor, cell, { .type = NO_ITEM, .value = 0 });
+      set_connection_between(cell, neighbor, { .type = NO_ITEM, .value = 1 });
+      set_connection_between(neighbor, cell, { .type = NO_ITEM, .value = 1 });
 
       visited[neighbor] = true;
       stack.push_back(neighbor);
@@ -91,7 +91,7 @@ void Graph::Scramble(unsigned start_node, unsigned exit_node) noexcept
   }
 }
 
-void Graph::RemoveRandomWalls(uint percentage) noexcept
+void Graph::RemoveRandomWalls(unsigned percentage) noexcept
 {
   std::random_device                        rand;
   std::mt19937                              gen { rand() };

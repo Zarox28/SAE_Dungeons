@@ -30,8 +30,8 @@
 
 - Case Rouge : Entré
 - Case Verte : Sortie
-- Mur Vert : Monstre
-- Mur Rouge : Fontaine de vie
+- Mur Vert : Fontaine de vie
+- Mur Rouge : Monstre
 - Mur Noir : Simple mur
 - Mur Jaune : Trésor
 

@@ -114,8 +114,8 @@ int main()
           {
             case WALLED      : wall_color = BLACK; break;
             case NO_ITEM     : wall_color = GRAY; break;
-            case MONSTER     : wall_color = GREEN; break;
-            case HEALTH_PACK : wall_color = RED; break;
+            case MONSTER     : wall_color = RED; break;
+            case HEALTH_PACK : wall_color = GREEN; break;
             case TREASURE    : wall_color = YELLOW; break;
             default          : wall_color = BLUE; break;  // for debugging, we should never see a blue wall
           }
@@ -139,8 +139,8 @@ int main()
           {
             case WALLED      : wall_color = BLACK; break;
             case NO_ITEM     : wall_color = GRAY; break;
-            case MONSTER     : wall_color = GREEN; break;
-            case HEALTH_PACK : wall_color = RED; break;
+            case MONSTER     : wall_color = RED; break;
+            case HEALTH_PACK : wall_color = GREEN; break;
             case TREASURE    : wall_color = YELLOW; break;
             default          : wall_color = BLUE; break;  // for debugging, we should never see a blue wall
           }
@@ -235,7 +235,7 @@ int main()
       "10",
       &config.weight_money,
       0,
-      10
+      30
     );
 
     if (GuiButton(

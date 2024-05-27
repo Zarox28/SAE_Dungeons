@@ -125,7 +125,7 @@ class Graph
    *
    * @param percentage Percentage of walls to remove
    */
-  void RemoveRandomWalls(uint percentage) noexcept;
+  void RemoveRandomWalls(unsigned percentage) noexcept;
 
   /**
    * Places items on the graph
